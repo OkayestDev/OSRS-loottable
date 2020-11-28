@@ -7,6 +7,8 @@ import com.loottable.controllers.LootTableController;
 import javax.inject.Inject;
 
 import net.runelite.api.Client;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.NPC;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.client.config.ConfigManager;
