@@ -10,6 +10,9 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 
 import com.loottable.views.components.LootTablePanel;
+
+import org.json.simple.JSONArray;
+
 import com.loottable.views.components.Header;
 
 import net.runelite.client.ui.PluginPanel;
@@ -27,11 +30,11 @@ public class LootTablePluginPanel extends PluginPanel {
         add(header);
     }
 
-	public void rebuildPanel(String monsterName, Map<String, List<String[]>> allLootTable) {
+    public void rebuildPanel(String monsterName, JSONArray dropTable) {
         SwingUtilities.invokeLater(() -> {
             this.removeAll();
             Header header = new Header(monsterName, onSearchButtonPressed, onSearchBarTextChanged);
-            LootTablePanel lootTablePanel = new LootTablePanel(allLootTable);
+            LootTablePanel lootTablePanel = new LootTablePanel(dropTable);
             add(header);
             add(lootTablePanel, BorderLayout.WEST);
         });

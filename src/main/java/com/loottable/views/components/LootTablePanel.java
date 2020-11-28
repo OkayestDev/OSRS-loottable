@@ -9,14 +9,17 @@ import java.util.Map;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import net.runelite.client.ui.ColorScheme;
 
 import javax.swing.BoxLayout;
 
 public class LootTablePanel extends JPanel {
-	private static final long serialVersionUID = 1132676497548426861L;
+    private static final long serialVersionUID = 1132676497548426861L;
 
-	public LootTablePanel(Map<String, List<String[]>> allLootTables) {
+    public LootTablePanel(JSONArray dropTable) {
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
         JPanel container = new JPanel();
@@ -27,18 +30,13 @@ public class LootTablePanel extends JPanel {
         scrollPane.setBackground(ColorScheme.LIGHT_GRAY_COLOR);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-        for (Map.Entry<String, List<String[]>> entry : allLootTables.entrySet()) {
-            String tableHeaderString = entry.getKey();
-            TableHeader tableHeader = new TableHeader(tableHeaderString);
-            container.add(tableHeader);
 
-            List<String[]> lootTable = entry.getValue();
-            ListIterator<String[]> iterator = lootTable.listIterator();
-            while (iterator.hasNext()) {
-                String[] lootRow = iterator.next();
-                ItemPanel itemPanel = new ItemPanel(lootRow[0], lootRow[1], lootRow[2], lootRow[3], lootRow[4]);
-                container.add(itemPanel);
-            }
+        /** @todo get price and icon */
+        for (Object drop : dropTable) {
+            JSONObject jsonDrop = (JSONObject) drop;
+            ItemPanel itemPanel = new ItemPanel("", jsonDrop.get("name").toString(),
+                    jsonDrop.get("quantity").toString(), jsonDrop.get("rarity").toString(), "0");
+            container.add(itemPanel);
         }
 
         add(container, BorderLayout.WEST);

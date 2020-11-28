@@ -42,7 +42,7 @@ public class LootTablePlugin extends Plugin {
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event) {
-		lootTableController.onMenuOptionClicked(event);
+		lootTableController.onMenuOptionClicked(event, client);
 	}
 
 	@Provides

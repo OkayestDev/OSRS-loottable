@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import com.loottable.helpers.OsrsBoxApi;
 import com.loottable.helpers.ScrapeWiki;
 import com.loottable.helpers.UiUtilities;
 import com.loottable.views.LootTablePluginPanel;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 
 import net.runelite.api.Client;
 import net.runelite.api.MenuAction;
@@ -51,21 +53,24 @@ public class LootTableController {
 
         for (MenuEntry menuEntry : menuEntries) {
             int id = menuEntry.getIdentifier();
-            NPC target = cachedNPCs[id];
 
-            if (target != null) {
-                int combatLevel = target.getCombatLevel();
-                // If combatLevel is greater than 0, assume able to attack
-                if (combatLevel > 0) {
-                    int widgetId = menuEntry.getParam1();
-                    String monsterName = menuEntry.getTarget();
-                    final MenuEntry lootTableMenuEntry = new MenuEntry();
-                    lootTableMenuEntry.setOption(LOOT_TABLE_MENU_OPTION);
-                    lootTableMenuEntry.setTarget(monsterName);
-                    lootTableMenuEntry.setIdentifier(menuEntry.getIdentifier());
-                    lootTableMenuEntry.setParam1(widgetId);
-                    lootTableMenuEntry.setType(MenuAction.RUNELITE.getId());
-                    client.setMenuEntries(ArrayUtils.addAll(menuEntries, lootTableMenuEntry));
+            if (id < cachedNPCs.length) {
+                NPC target = cachedNPCs[id];
+
+                if (target != null) {
+                    int combatLevel = target.getCombatLevel();
+                    // If combatLevel is greater than 0, assume able to attack
+                    if (combatLevel > 0) {
+                        int widgetId = menuEntry.getParam1();
+                        String monsterName = menuEntry.getTarget();
+                        final MenuEntry lootTableMenuEntry = new MenuEntry();
+                        lootTableMenuEntry.setOption(LOOT_TABLE_MENU_OPTION);
+                        lootTableMenuEntry.setTarget(monsterName);
+                        lootTableMenuEntry.setIdentifier(menuEntry.getIdentifier());
+                        lootTableMenuEntry.setParam1(widgetId);
+                        lootTableMenuEntry.setType(MenuAction.RUNELITE.getId());
+                        client.setMenuEntries(ArrayUtils.addAll(menuEntries, lootTableMenuEntry));
+                    }
                 }
             }
         }
@@ -82,19 +87,30 @@ public class LootTableController {
         return StringUtils.substringBetween(menuOptionTarget, ">", "<");
     }
 
-    public void onMenuOptionClicked(MenuOptionClicked event) {
-        int id = event.getId();
+    public void onMenuOptionClicked(MenuOptionClicked event, Client client) {
+        final NPC[] cachedNPCs = client.getCachedNPCs();
 
         if (event.getMenuOption().equals(LOOT_TABLE_MENU_OPTION)) {
-            this.monsterName = parseMenuTarget(event.getMenuTarget());
-            Map<String, List<String[]>> allLootTables = ScrapeWiki.scrapeWiki(this.monsterName);
-            lootTablePluginPanel.rebuildPanel(this.monsterName, allLootTables);
+
+            int eventId = event.getId();
+
+            if (eventId < cachedNPCs.length) {
+                NPC target = cachedNPCs[eventId];
+                int targetId = target.getId();
+                this.monsterName = target.getName();
+
+                JSONArray dropTable = OsrsBoxApi.getMonsterDropTable(targetId);
+                lootTablePluginPanel.rebuildPanel(this.monsterName, dropTable);
+            }
         }
+
     }
 
     public void onSearchButtonPressed(ActionEvent event) {
-        Map<String, List<String[]>> allLootTables = ScrapeWiki.scrapeWiki(this.monsterName);
-        lootTablePluginPanel.rebuildPanel(this.monsterName, allLootTables);
+        // Map<String, List<String[]>> allLootTables =
+        // ScrapeWiki.scrapeWiki(this.monsterName);
+        // lootTablePluginPanel.rebuildPanel(this.monsterName, allLootTables);
+        /** @todo fetch id of monster by name? */
     }
 
     public void onSearchBarTextChanged(String text) {
