@@ -41,6 +41,7 @@ public class LootTablePluginPanel extends PluginPanel {
             LootTablePanel lootTablePanel = new LootTablePanel(dropTable, this.itemManager);
             add(header);
             add(lootTablePanel, BorderLayout.WEST);
+            repaint();
         });
     }
 }

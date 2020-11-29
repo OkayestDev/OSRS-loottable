@@ -105,10 +105,15 @@ public class LootTableController {
     }
 
     public void onSearchButtonPressed(ActionEvent event) {
-        // Map<String, List<String[]>> allLootTables =
-        // ScrapeWiki.scrapeWiki(this.monsterName);
-        // lootTablePluginPanel.rebuildPanel(this.monsterName, allLootTables);
-        /** @todo fetch id of monster by name? */
+        int id = OsrsBoxApi.getMonsterId(this.monsterName);
+
+        if (id == 0) {
+            // Show dialog
+            return;
+        }
+
+        JSONArray dropTable = OsrsBoxApi.getMonsterDropTable(id);
+        lootTablePluginPanel.rebuildPanel(this.monsterName, dropTable);
     }
 
     public void onSearchBarTextChanged(String text) {

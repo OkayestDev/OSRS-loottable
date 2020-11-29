@@ -43,11 +43,8 @@ public class ItemPanel extends JPanel {
         JPanel leftPanel = constructLeftSide();
         JPanel rightPanel = constructRightSide();
 
-        JPanel dropRequirementPanel = constructDropRequirementPanel();
-
         paddingContainer.add(leftPanel, BorderLayout.WEST);
         paddingContainer.add(rightPanel, BorderLayout.EAST);
-        paddingContainer.add(dropRequirementPanel, BorderLayout.SOUTH);
 
         container.add(paddingContainer);
 

@@ -1,5 +1,7 @@
 package com.loottable.helpers;
 
+import java.net.URLEncoder;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -33,6 +35,33 @@ public class OsrsBoxApi {
             return resultObject;
         } catch (Exception error) {
             return null;
+        }
+    }
+
+    public static int getMonsterId(String monsterName) {
+        try {
+            monsterName = monsterName.toLowerCase();
+            monsterName = monsterName.substring(0, 1).toUpperCase() + monsterName.substring(1);
+            String query = URLEncoder.encode("{\"name\":\"" + monsterName + "\"}", "UTF-8");
+            String url = osrsBoxApiBase + "/monsters?where=" + query;
+            Object response = OsrsBoxApi.request(url);
+
+            JSONObject castResponse = (JSONObject) response;
+            JSONArray items = (JSONArray) castResponse.get("_items");
+
+            if (items == null || items.size() == 0) {
+                return 0;
+            }
+
+            JSONObject firstItem = (JSONObject) items.get(0);
+            if (firstItem != null) {
+                int monsterId = Integer.valueOf((String) firstItem.get("id"));
+                return monsterId;
+            }
+
+            return 0;
+        } catch (Exception error) {
+            return 0;
         }
     }
 }
