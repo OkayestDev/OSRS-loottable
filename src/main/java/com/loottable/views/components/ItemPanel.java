@@ -1,20 +1,15 @@
 package com.loottable.views.components;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
 import java.awt.image.BufferedImage;
 
-import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import com.loottable.helpers.ScrapeWiki;
 import com.loottable.helpers.UiUtilities;
 
 import net.runelite.client.ui.ColorScheme;
@@ -22,14 +17,14 @@ import net.runelite.client.ui.FontManager;
 
 public class ItemPanel extends JPanel {
     private static final long serialVersionUID = 8426321039456174778L;
-    String imageSource;
+    BufferedImage image;
     String itemName;
     String quantity;
     String rarity;
     String price;
 
-	public ItemPanel(String imageSource, String itemName, String quantity, String rarity, String price) {
-        this.imageSource = imageSource;
+    public ItemPanel(BufferedImage image, String itemName, String quantity, String rarity, String price) {
+        this.image = image;
         this.itemName = itemName;
         this.quantity = quantity;
         this.rarity = rarity;
@@ -43,56 +38,37 @@ public class ItemPanel extends JPanel {
 
         JPanel paddingContainer = new JPanel(new BorderLayout());
         int padding = 2;
-        paddingContainer.setBorder(new EmptyBorder(
-            padding, 
-            padding, 
-            padding, 
-            padding
-        ));
-        
+        paddingContainer.setBorder(new EmptyBorder(padding, padding, padding, padding));
+
         JPanel leftPanel = constructLeftSide();
         JPanel rightPanel = constructRightSide();
 
+        JPanel dropRequirementPanel = constructDropRequirementPanel();
+
         paddingContainer.add(leftPanel, BorderLayout.WEST);
         paddingContainer.add(rightPanel, BorderLayout.EAST);
+        paddingContainer.add(dropRequirementPanel, BorderLayout.SOUTH);
 
         container.add(paddingContainer);
-        add(container);
-    }
 
-    private void fetchImage(JLabel imageLabel) {
-        try {
-            URL url = new URL(this.imageSource);
-            final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestProperty(
-                "User-Agent",
-                ScrapeWiki.userAgent
-            );
-            BufferedImage image = ImageIO.read(connection.getInputStream());
-            imageLabel.setIcon(new ImageIcon(image));
-        } catch (Exception error) {}
+        add(container);
     }
 
     private JPanel constructItemImage() {
         JPanel container = new JPanel(new BorderLayout());
         container.setSize(30, container.getHeight());
-        JLabel imageLabel = new JLabel();
 
-        // Start thread to fetch image
-        Thread fetchImageThread = new Thread(() -> fetchImage(imageLabel));
-        fetchImageThread.start();
-    
+        JLabel imageLabel = new JLabel();
+        imageLabel.setIcon(new ImageIcon(image));
         imageLabel.setSize(35, imageLabel.getWidth());
-       
+
         container.add(imageLabel, BorderLayout.WEST);
         container.setSize(35, container.getHeight());
         return container;
     }
 
     /**
-     * Constructs left side of item panel
-     * Item Name
-     * Rarity
+     * Constructs left side of item panel Item Name Rarity
      */
     private JPanel constructLeftSide() {
         JPanel container = new JPanel();
@@ -121,11 +97,8 @@ public class ItemPanel extends JPanel {
         return container;
     }
 
-
     /**
-     * Constructs right side of item panel
-     * quantity
-     * Price
+     * Constructs right side of item panel quantity Price
      */
     private JPanel constructRightSide() {
         JPanel rightSidePanel = new JPanel(new GridLayout(2, 1));
@@ -137,7 +110,7 @@ public class ItemPanel extends JPanel {
         quantityLabel.setHorizontalAlignment(JLabel.RIGHT);
         quantityLabel.setVerticalAlignment(JLabel.CENTER);
 
-        JLabel priceLabel = price.equals("Not sold") ? new JLabel(price) : new JLabel(price + "gp");
+        JLabel priceLabel = price.equals("0") ? new JLabel() : new JLabel(price + "gp");
         priceLabel.setFont(FontManager.getRunescapeSmallFont());
         priceLabel.setForeground(ColorScheme.GRAND_EXCHANGE_ALCH);
         priceLabel.setVerticalAlignment(JLabel.CENTER);

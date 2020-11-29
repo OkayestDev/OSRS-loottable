@@ -2,12 +2,9 @@ package com.loottable.controllers;
 
 import java.awt.event.ActionEvent;
 
-import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import com.loottable.helpers.OsrsBoxApi;
-import com.loottable.helpers.ScrapeWiki;
 import com.loottable.helpers.UiUtilities;
 import com.loottable.views.LootTablePluginPanel;
 
@@ -21,6 +18,7 @@ import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.ImageUtil;
@@ -33,11 +31,11 @@ public class LootTableController {
 
     final private String LOOT_TABLE_MENU_OPTION = "Loot Table";
 
-    public LootTableController(ClientToolbar clientToolbar) {
+    public LootTableController(ClientToolbar clientToolbar, ItemManager itemManager) {
         this.clientToolbar = clientToolbar;
         Consumer<String> onSearchBarTextChangedListener = text -> onSearchBarTextChanged(text);
-        lootTablePluginPanel = new LootTablePluginPanel((ActionEvent event) -> onSearchButtonPressed(event),
-                onSearchBarTextChangedListener);
+        lootTablePluginPanel = new LootTablePluginPanel(itemManager,
+                (ActionEvent event) -> onSearchButtonPressed(event), onSearchBarTextChangedListener);
         setUpNavigationButton();
         this.monsterName = null;
     }

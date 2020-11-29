@@ -7,12 +7,11 @@ import com.loottable.controllers.LootTableController;
 import javax.inject.Inject;
 
 import net.runelite.api.Client;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.NPC;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
@@ -28,11 +27,14 @@ public class LootTablePlugin extends Plugin {
 	@Inject
 	private ClientToolbar clientToolbar;
 
+	@Inject
+	private ItemManager itemManager;
+
 	private LootTableController lootTableController;
 
 	@Override
 	protected void startUp() throws Exception {
-		lootTableController = new LootTableController(clientToolbar);
+		lootTableController = new LootTableController(clientToolbar, itemManager);
 	}
 
 	@Subscribe

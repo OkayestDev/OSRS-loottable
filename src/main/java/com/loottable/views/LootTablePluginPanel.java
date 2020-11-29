@@ -15,6 +15,7 @@ import org.json.simple.JSONArray;
 
 import com.loottable.views.components.Header;
 
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.PluginPanel;
 
 public class LootTablePluginPanel extends PluginPanel {
@@ -22,8 +23,11 @@ public class LootTablePluginPanel extends PluginPanel {
 
     private ActionListener onSearchButtonPressed;
     private Consumer<String> onSearchBarTextChanged;
+    private ItemManager itemManager;
 
-    public LootTablePluginPanel(ActionListener onSearchButtonPressed, Consumer<String> onSearchBarTextChanged) {
+    public LootTablePluginPanel(ItemManager itemManager, ActionListener onSearchButtonPressed,
+            Consumer<String> onSearchBarTextChanged) {
+        this.itemManager = itemManager;
         this.onSearchButtonPressed = onSearchButtonPressed;
         this.onSearchBarTextChanged = onSearchBarTextChanged;
         Header header = new Header("", onSearchButtonPressed, onSearchBarTextChanged);
@@ -34,7 +38,7 @@ public class LootTablePluginPanel extends PluginPanel {
         SwingUtilities.invokeLater(() -> {
             this.removeAll();
             Header header = new Header(monsterName, onSearchButtonPressed, onSearchBarTextChanged);
-            LootTablePanel lootTablePanel = new LootTablePanel(dropTable);
+            LootTablePanel lootTablePanel = new LootTablePanel(dropTable, this.itemManager);
             add(header);
             add(lootTablePanel, BorderLayout.WEST);
         });
