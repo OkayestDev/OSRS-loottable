@@ -22,9 +22,6 @@ public class LootTablePlugin extends Plugin {
 	private Client client;
 
 	@Inject
-	private LootTableConfig config;
-
-	@Inject
 	private ClientToolbar clientToolbar;
 
 	@Inject
@@ -35,6 +32,11 @@ public class LootTablePlugin extends Plugin {
 	@Override
 	protected void startUp() throws Exception {
 		lootTableController = new LootTableController(clientToolbar, itemManager);
+	}
+
+	@Override
+	protected void shutDown() {
+		lootTableController.onPluginShutdown();
 	}
 
 	@Subscribe

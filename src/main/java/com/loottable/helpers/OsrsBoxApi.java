@@ -2,37 +2,36 @@ package com.loottable.helpers;
 
 import java.net.URLEncoder;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
+import com.google.gson.Gson;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Request.Builder;
+
 import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
 
 public class OsrsBoxApi {
     private static String osrsBoxApiBase = "https://api.osrsbox.com/";
+    public static OkHttpClient client = new OkHttpClient();
+    public static Gson gson = new Gson();
 
     public static JSONArray getMonsterDropTable(int monsterId) {
         String url = osrsBoxApiBase + "/monsters/" + String.valueOf(monsterId);
-        Object response = OsrsBoxApi.request(url);
-
-        JSONObject monsterInfo = (JSONObject) response;
-
-        JSONArray dropTable = (JSONArray) monsterInfo.get("drops");
+        Object response = request(url);
+        JSONObject castResponse = (JSONObject) response;
+        JSONArray dropTable = (JSONArray) castResponse.get("drops");
         return dropTable;
     }
 
     public static Object request(String url) {
-        try {
-            CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-            HttpGet request = new HttpGet(url);
-            request.addHeader("content-type", "application/json");
-            HttpResponse result = httpClient.execute(request);
-            String json = EntityUtils.toString(result.getEntity(), "UTF-8");
+        Builder requestBuilder = new Builder().url(url);
+        Request request = requestBuilder.build();
+        try (Response response = client.newCall(request).execute()) {
             JSONParser parser = new JSONParser();
-            Object resultObject = parser.parse(json);
-            return resultObject;
+            Object responseObject = parser.parse(response.body().string());
+            return responseObject;
         } catch (Exception error) {
             return null;
         }
@@ -42,7 +41,7 @@ public class OsrsBoxApi {
         try {
             monsterName = monsterName.toLowerCase();
             monsterName = monsterName.substring(0, 1).toUpperCase() + monsterName.substring(1);
-            String query = URLEncoder.encode("{\"name\":\"" + monsterName + "\"}", "UTF-8");
+            String query = URLEncoder.encode("{\"name\":\"" + monsterName + "\", \"duplicate\": false}", "UTF-8");
             String url = osrsBoxApiBase + "/monsters?where=" + query;
             Object response = OsrsBoxApi.request(url);
 
@@ -53,6 +52,7 @@ public class OsrsBoxApi {
                 return 0;
             }
 
+            // @Todo have tabs for each WIKI name
             JSONObject firstItem = (JSONObject) items.get(0);
             if (firstItem != null) {
                 int monsterId = Integer.valueOf((String) firstItem.get("id"));

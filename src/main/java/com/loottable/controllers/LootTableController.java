@@ -40,6 +40,10 @@ public class LootTableController {
         this.monsterName = null;
     }
 
+    public void onPluginShutdown() {
+        clientToolbar.removeNavigation(navButton);
+    }
+
     /**
      * Adds "Loot Table" option if "Attack" option is present
      * 
@@ -74,24 +78,11 @@ public class LootTableController {
         }
     }
 
-    /**
-     * menuOptionTarget structured like <col=ffff00>Monk<col=ff00> (level-2) We just
-     * want Monk to be returned
-     * 
-     * @param menuOptionTarget
-     * @return
-     */
-    public String parseMenuTarget(String menuOptionTarget) {
-        return StringUtils.substringBetween(menuOptionTarget, ">", "<");
-    }
-
     public void onMenuOptionClicked(MenuOptionClicked event, Client client) {
         final NPC[] cachedNPCs = client.getCachedNPCs();
 
         if (event.getMenuOption().equals(LOOT_TABLE_MENU_OPTION)) {
-
             int eventId = event.getId();
-
             if (eventId < cachedNPCs.length) {
                 NPC target = cachedNPCs[eventId];
                 int targetId = target.getId();
@@ -108,7 +99,7 @@ public class LootTableController {
         int id = OsrsBoxApi.getMonsterId(this.monsterName);
 
         if (id == 0) {
-            // Show dialog
+            lootTablePluginPanel.rebuildPanel(this.monsterName, null);
             return;
         }
 
@@ -122,7 +113,7 @@ public class LootTableController {
 
     private void setUpNavigationButton() {
         navButton = NavigationButton.builder().tooltip("Loot Table")
-                .icon(ImageUtil.getResourceStreamFromClass(getClass(), UiUtilities.lootTableNavIcon)).priority(5)
+                .icon(ImageUtil.loadImageResource(getClass(), UiUtilities.lootTableNavIcon)).priority(5)
                 .panel(lootTablePluginPanel).build();
         clientToolbar.addNavigation(navButton);
     }

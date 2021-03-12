@@ -1,7 +1,5 @@
 package com.loottable.views;
 
-import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.swing.SwingUtilities;
@@ -10,6 +8,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 
 import com.loottable.views.components.LootTablePanel;
+import com.loottable.views.components.NoDropTable;
 
 import org.json.simple.JSONArray;
 
@@ -25,8 +24,11 @@ public class LootTablePluginPanel extends PluginPanel {
     private Consumer<String> onSearchBarTextChanged;
     private ItemManager itemManager;
 
-    public LootTablePluginPanel(ItemManager itemManager, ActionListener onSearchButtonPressed,
-            Consumer<String> onSearchBarTextChanged) {
+    public LootTablePluginPanel(
+        ItemManager itemManager, 
+        ActionListener onSearchButtonPressed,
+        Consumer<String> onSearchBarTextChanged
+    ) {
         this.itemManager = itemManager;
         this.onSearchButtonPressed = onSearchButtonPressed;
         this.onSearchBarTextChanged = onSearchBarTextChanged;
@@ -38,10 +40,19 @@ public class LootTablePluginPanel extends PluginPanel {
         SwingUtilities.invokeLater(() -> {
             this.removeAll();
             Header header = new Header(monsterName, onSearchButtonPressed, onSearchBarTextChanged);
-            LootTablePanel lootTablePanel = new LootTablePanel(dropTable, this.itemManager);
             add(header);
-            add(lootTablePanel, BorderLayout.WEST);
-            repaint();
+
+            if (dropTable == null || dropTable.size() == 0) {
+                if (monsterName != "") {
+                    NoDropTable noDropTable = new NoDropTable();
+                    add(noDropTable);
+                }
+            } else {
+                LootTablePanel lootTablePanel = new LootTablePanel(dropTable, this.itemManager);
+                add(lootTablePanel, BorderLayout.WEST);
+            }
+
+            this.revalidate();
         });
     }
 }
