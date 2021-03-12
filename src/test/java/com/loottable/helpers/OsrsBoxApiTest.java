@@ -1,6 +1,5 @@
 package com.loottable.helpers;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
@@ -8,25 +7,32 @@ import org.junit.Test;
 public class OsrsBoxApiTest {
     @Test
     public void testReturnsInfo() throws Exception {
-        Object dropTable = OsrsBoxApi.getMonsterDropTable(2);
+        Object dropTable = OsrsBoxApi.getMonsterDropTableById(2);
         assertNotNull(dropTable);
     }
 
     @Test
     public void testGetMonsterId() {
-        int monsterId = OsrsBoxApi.getMonsterId("guard");
-        assertNotNull(monsterId);
-    }
-
-    @Test
-    public void testGetMonsterIdWithBadMonsterName() {
-        int monsterId = OsrsBoxApi.getMonsterId("hooblahh");
-        assertEquals(0, monsterId);
+        Object dropTable = OsrsBoxApi.getOSRSBoxItemsByName("guard");
+        assertNotNull(dropTable);
     }
 
     @Test
     public void testGetMonsterIdWithMonsterNameWithSpace() {
-        int monsterId = OsrsBoxApi.getMonsterId("Lesser Demon");
-        assertNotNull(monsterId);
+        Object dropTable = OsrsBoxApi.getOSRSBoxItemsByName("Lesser Demon");
+        assertNotNull(dropTable);
     }
+
+    @Test
+    public void testGetLongTailedWyvernDropTable() {
+        Object dropTable = OsrsBoxApi.getOSRSBoxItemsByName("Long-Tailed Wyvern");
+        assertNotNull(dropTable);
+    }
+
+    @Test
+    public void testGetZulrahDropTable() {
+        Object dropTable = OsrsBoxApi.getOSRSBoxItemsByName("Zulrah");
+        assertNotNull(dropTable);
+    }
+    
 }

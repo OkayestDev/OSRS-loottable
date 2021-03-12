@@ -9,8 +9,8 @@ import com.loottable.helpers.UiUtilities;
 import com.loottable.views.LootTablePluginPanel;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import net.runelite.api.Client;
 import net.runelite.api.MenuAction;
@@ -29,11 +29,14 @@ public class LootTableController {
     private NavigationButton navButton;
     private String monsterName;
 
+    private Consumer<Integer> selectItemConsumer;
+
     final private String LOOT_TABLE_MENU_OPTION = "Loot Table";
 
     public LootTableController(ClientToolbar clientToolbar, ItemManager itemManager) {
         this.clientToolbar = clientToolbar;
         Consumer<String> onSearchBarTextChangedListener = text -> onSearchBarTextChanged(text);
+        this.selectItemConsumer = id -> buildDropTableById(id);
         lootTablePluginPanel = new LootTablePluginPanel(itemManager,
                 (ActionEvent event) -> onSearchButtonPressed(event), onSearchBarTextChangedListener);
         setUpNavigationButton();
@@ -85,26 +88,30 @@ public class LootTableController {
             int eventId = event.getId();
             if (eventId < cachedNPCs.length) {
                 NPC target = cachedNPCs[eventId];
-                int targetId = target.getId();
                 this.monsterName = target.getName();
-
-                JSONArray dropTable = OsrsBoxApi.getMonsterDropTable(targetId);
-                lootTablePluginPanel.rebuildPanel(this.monsterName, dropTable);
+                buildDropTableById(target.getId());
             }
         }
+    }
 
+    public void buildDropTableById(int id) {
+        JSONArray dropTable = OsrsBoxApi.getMonsterDropTableById(id);
+        lootTablePluginPanel.rebuildPanel(this.monsterName, dropTable);
     }
 
     public void onSearchButtonPressed(ActionEvent event) {
-        int id = OsrsBoxApi.getMonsterId(this.monsterName);
+        JSONArray items = OsrsBoxApi.getOSRSBoxItemsByName(this.monsterName);
 
-        if (id == 0) {
-            lootTablePluginPanel.rebuildPanel(this.monsterName, null);
-            return;
+        // Only one result returned from OSRS Box
+        if (items.size() == 1) {
+            JSONObject item = (JSONObject) items.get(0);
+            JSONArray dropTable = (JSONArray) item.get("drops");
+            lootTablePluginPanel.rebuildPanel(this.monsterName, dropTable);
         }
-
-        JSONArray dropTable = OsrsBoxApi.getMonsterDropTable(id);
-        lootTablePluginPanel.rebuildPanel(this.monsterName, dropTable);
+        // Multiple results, allow user to chose one
+        else {
+            lootTablePluginPanel.buildMultipleResults(this.monsterName, items, selectItemConsumer);
+        }
     }
 
     public void onSearchBarTextChanged(String text) {

@@ -8,6 +8,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 
 import com.loottable.views.components.LootTablePanel;
+import com.loottable.views.components.MultipleItems;
 import com.loottable.views.components.NoDropTable;
 
 import org.json.simple.JSONArray;
@@ -51,6 +52,19 @@ public class LootTablePluginPanel extends PluginPanel {
                 LootTablePanel lootTablePanel = new LootTablePanel(dropTable, this.itemManager);
                 add(lootTablePanel, BorderLayout.WEST);
             }
+
+            this.revalidate();
+        });
+    }
+
+    public void buildMultipleResults(String monsterName, JSONArray items, Consumer<Integer> selectItemConsumer) {
+        SwingUtilities.invokeLater(() -> {
+            this.removeAll();
+            Header header = new Header(monsterName, onSearchButtonPressed, onSearchBarTextChanged);
+            add(header);
+
+            MultipleItems multipleItems = new MultipleItems(items, selectItemConsumer);
+            add(multipleItems);
 
             this.revalidate();
         });
