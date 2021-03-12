@@ -26,6 +26,8 @@ public class DecimalToFraction {
         int h1Int = (int) h1;
         int k1Int = (int) k1;
 
-        return h1Int + "/" + k1Int;
+        int denom = k1Int / h1Int;
+
+        return 1 + "/" + denom;
     }
 }

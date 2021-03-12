@@ -14,6 +14,7 @@ import com.loottable.helpers.UiUtilities;
 
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
+import net.runelite.client.util.AsyncBufferedImage;
 
 public class ItemPanel extends JPanel {
     private static final long serialVersionUID = 8426321039456174778L;

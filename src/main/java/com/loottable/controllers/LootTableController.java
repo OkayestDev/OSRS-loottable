@@ -100,6 +100,10 @@ public class LootTableController {
     }
 
     public void onSearchButtonPressed(ActionEvent event) {
+        if (this.monsterName == null || this.monsterName == "") {
+            return;
+        }
+
         JSONArray items = OsrsBoxApi.getOSRSBoxItemsByName(this.monsterName);
 
         // Only one result returned from OSRS Box

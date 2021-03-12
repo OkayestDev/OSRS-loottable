@@ -1,6 +1,7 @@
 package com.loottable.views.components;
 
 import java.awt.GridLayout;
+import java.awt.BorderLayout;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -11,10 +12,15 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
+
+import com.loottable.helpers.UiUtilities;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
+import net.runelite.client.ui.ColorScheme;
 
 public class MultipleItems extends JPanel {
     private Consumer<Integer> selectItemConsumer;
@@ -42,26 +48,34 @@ public class MultipleItems extends JPanel {
 
     public void constructItemPanel(JSONObject item) {
         JPanel container = new JPanel();
-        container.setBorder(new EmptyBorder(0, 0, 10, 0));
+        container.setBorder(UiUtilities.ITEM_BORDER);
         container.setLayout(new GridLayout(2, 1));
-        String name = (String) item.get("name");
         String wikiName = (String) item.get("wiki_name");
 
-        JPanel namesContainer = new JPanel();
-        namesContainer.setLayout(new GridLayout(2, 1));
-        JLabel nameLabel = new JLabel("Name: " + name);
-        JLabel wikiNameLabel = new JLabel("Wiki Name: " + wikiName);
-        namesContainer.add(nameLabel);
-        namesContainer.add(wikiNameLabel);
+        JTextArea wikiNameTextArea = new JTextArea(2, 1);
+        wikiNameTextArea.setLineWrap(true);
+        wikiNameTextArea.setOpaque(false);
+        wikiNameTextArea.setEditable(false);
+        wikiNameTextArea.setFocusable(false);
+        wikiNameTextArea.setBackground(ColorScheme.DARK_GRAY_COLOR);
+        wikiNameTextArea.setText(wikiName);
+        wikiNameTextArea.setBorder(new EmptyBorder(2, 2, 2, 2));
+        container.add(wikiNameTextArea);
 
-        container.add(namesContainer);
-
+        JPanel buttonContainer  = new JPanel();
         JButton selectButton = new JButton("Select");
         selectButton.addActionListener((ActionEvent event) -> {
-            selectItemConsumer.accept((Integer) item.get("id"));
+            Integer monsterId = Integer.parseInt((String) item.get("id"));
+            selectItemConsumer.accept(monsterId);
         });
-        container.add(selectButton);
+        buttonContainer.add(selectButton);
+        container.add(buttonContainer);
 
-        add(container);
+        JPanel spaceContainer = new JPanel();
+        spaceContainer.setLayout(new BorderLayout());
+        spaceContainer.setBorder(new EmptyBorder(0, 0, 5, 0));
+        spaceContainer.add(container);
+
+        add(spaceContainer);
     }
 }

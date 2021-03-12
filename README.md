@@ -22,7 +22,12 @@ If you notice any bugs or have any suggestions, let us know by making an [issue]
 
 ## Changelog
 
-v1.0 - Plugin added!
+v1.0 
+    - Plugin added!
 
 v1.0.1
-    > Fixed issue where invalid url characters weren't being escaped
+    - Fixed issue where invalid url characters weren't being escaped
+
+v1.1.0
+    - Using OSRSBox api over scaping wiki
+    - Implemented multiple search result selection.
