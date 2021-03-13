@@ -11,6 +11,7 @@ import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
@@ -21,16 +22,21 @@ public class LootTablePlugin extends Plugin {
 	private Client client;
 
 	@Inject
-	private LootTableConfig config;
+	private ClientToolbar clientToolbar;
 
 	@Inject
-	private ClientToolbar clientToolbar;
+	private ItemManager itemManager;
 
 	private LootTableController lootTableController;
 
 	@Override
 	protected void startUp() throws Exception {
-		lootTableController = new LootTableController(clientToolbar);
+		lootTableController = new LootTableController(clientToolbar, itemManager);
+	}
+
+	@Override
+	protected void shutDown() {
+		lootTableController.onPluginShutdown();
 	}
 
 	@Subscribe
@@ -40,7 +46,7 @@ public class LootTablePlugin extends Plugin {
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event) {
-		lootTableController.onMenuOptionClicked(event);
+		lootTableController.onMenuOptionClicked(event, client);
 	}
 
 	@Provides

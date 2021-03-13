@@ -10,12 +10,12 @@ repositories {
 	mavenCentral()
 }
 
-def runeLiteVersion = '1.6.32'
+def runeLiteVersion = '1.7.2.2'
 
 dependencies {
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
+	compile 'com.googlecode.json-simple:json-simple:1.1.1'
 
-	compile 'org.jsoup:jsoup:1.13.1'
 	compileOnly 'org.projectlombok:lombok:1.18.4'
 	annotationProcessor 'org.projectlombok:lombok:1.18.4'
 
@@ -30,7 +30,7 @@ dependencies {
 }
 
 group = 'com.loottable'
-version = '1.0.1'
+version = '1.1.0'
 sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile) {
