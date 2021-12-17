@@ -68,12 +68,13 @@ public class LootTableController {
                     if (combatLevel > 0) {
                         int widgetId = menuEntry.getParam1();
                         String monsterName = menuEntry.getTarget();
-                        final MenuEntry lootTableMenuEntry = new MenuEntry();
-                        lootTableMenuEntry.setOption(LOOT_TABLE_MENU_OPTION);
-                        lootTableMenuEntry.setTarget(monsterName);
-                        lootTableMenuEntry.setIdentifier(menuEntry.getIdentifier());
-                        lootTableMenuEntry.setParam1(widgetId);
-                        lootTableMenuEntry.setType(MenuAction.RUNELITE.getId());
+                        // Build and append our menu entry to the end of the list of entries.
+                        MenuEntry lootTableMenuEntry = client.createMenuEntry(menuEntries.length)
+                                .setOption(LOOT_TABLE_MENU_OPTION)
+                                .setTarget(monsterName)
+                                .setIdentifier(menuEntry.getIdentifier())
+                                .setParam1(widgetId)
+                                .setType(MenuAction.RUNELITE);
                         client.setMenuEntries(ArrayUtils.addAll(menuEntries, lootTableMenuEntry));
                     }
                 }
